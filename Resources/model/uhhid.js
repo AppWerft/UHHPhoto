@@ -18,18 +18,21 @@ UHHId.prototype.isAuth = function() {
 };
 
 UHHId.prototype.authorize = function(_parent, _callback) {
-	this.ui.parent = _parent;
-	this.ui.parent.add(this.ui.progress);
-	this.ui.progress.show();
+	console.log('Info: authorizing started');
 	var self = this;
+	console.log(this.ui);
 	if (this.isAuth()) {
+		console.log('Info: was authorized');
 		_callback();
-	} else {
-		this.ui.dialog.create(function(_user) {
-			stinekennung(_user, _callback);
-			fkennung(_user, _callback);
-		});
+		return;
 	}
+	this.ui.dialog.show();
+	console.log('Info: start login');
+	this.ui.dialog.addEventListener('login', function(_e) {
+		_parent.add(self.ui.progress);
+		console.log('Info: Creds received');
+		console.log(_e)
+	});
 };
 var stinekennung = function(_user, _callback) {
 	var doResponse = function() {

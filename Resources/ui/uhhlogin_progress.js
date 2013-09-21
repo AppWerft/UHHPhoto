@@ -4,7 +4,9 @@ exports.create = function() {
 		height : '50dp',
 		min : 0,
 		max : 1,
-		value : 0
+		width : '90%',
+		value : 0,
+		visible : false
 	});
 	return self;
 };

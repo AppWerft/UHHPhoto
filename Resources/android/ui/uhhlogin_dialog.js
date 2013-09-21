@@ -1,4 +1,4 @@
-exports.create = function(_login) {
+exports.create = function() {
 	var androidView = Ti.UI.createView({
 		layout : 'vertical',
 		height : Ti.UI.SIZE,
@@ -62,7 +62,10 @@ exports.create = function(_login) {
 		androidView : androidView
 	});
 	self.addEventListener('click', function() {
-		_login && _login(androidView.login.getValue() + ':' + androidView.password.getValue());
+		self.fireEvent('login', {
+			user : androidView.login.getValue(),
+			password : androidView.password.getValue()
+		});
 	});
 	return self;
 };
