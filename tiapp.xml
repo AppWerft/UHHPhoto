@@ -1,4 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?><ti:app xmlns:ti="http://ti.appcelerator.org">
+    <property name="acs-oauth-secret-development" type="string">oLdwQTwDR15KitQuTtjT33TeK4Hbt7p0</property>
+    <property name="acs-oauth-key-development" type="string">KkYSQCAcRz9dpGBsDkNoMDJA1eQ0T9G2</property>
+    <property name="acs-api-key-development" type="string">1KAWlNcVE3oThWJYwBdidz7wEaR9L7Bn</property>
+    <property name="acs-oauth-secret-production" type="string">l9hM2DQiuMC1C0BkUwbWT8m87XUZ2YSu</property>
+    <property name="acs-oauth-key-production" type="string">JROHUIuq7KaKo8h9Y91rvyf7H990xf14</property>
+    <property name="acs-api-key-production" type="string">vvR33kPiNMKMzsrXYVUR9NxB0ghzrs9p</property>
     <id>de.appwerft.uhhphoto</id>
     <name>UHHPhoto</name>
     <version>1.0</version>
@@ -27,16 +33,26 @@
             <orientation>Ti.UI.LANDSCAPE_RIGHT</orientation>
         </orientations>
     </iphone>
-    <android xmlns:android="http://schemas.android.com/apk/res/android"/>
-    <mobileweb>
-        <precache/>
-        <splash>
-            <enabled>true</enabled>
-            <inline-css-images>true</inline-css-images>
-        </splash>
-        <theme>default</theme>
-    </mobileweb>
-    <modules/>
+ <android xmlns:android="http://schemas.android.com/apk/res/android">
+        <manifest>
+            <uses-permission android:name="android.permission.INTERNET"/>
+            <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+            <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+            <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+            <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES"/>
+            <uses-feature android:glEsVersion="0x00020000" android:required="true"/>
+            <uses-permission android:name="de.appwerft.uhhphoto.permission.MAPS_RECEIVE"/>
+            <permission android:name="de.appwerft.uhhap.permission.MAPS_RECEIVE" android:protectionLevel="signature"/>
+            <application>
+                <meta-data android:name="com.google.android.maps.v2.API_KEY" android:value="AIzaSyAQqHoXXgGqEV_kiJV5qIJuzIxB43wpWyU"/>
+            </application>
+        </manifest>
+    </android>
+     <modules>
+        <module platform="commonjs">ti.cloud</module>
+         <module platform="android">ti.map</module>
+         <module platform="android" version="1.0">com.obscure.keychain</module> 
+    </modules>
     <deployment-targets>
         <target device="android">true</target>
         <target device="blackberry">false</target>
@@ -46,4 +62,5 @@
         <target device="tizen">false</target>
     </deployment-targets>
     <sdk-version>3.1.2.GA</sdk-version>
-<property name="ti.deploytype">test</property></ti:app>
+    <property name="ti.deploytype">test</property>
+</ti:app>

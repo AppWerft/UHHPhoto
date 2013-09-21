@@ -36,6 +36,8 @@ exports.create = function() {
 		buttonNames : ['UHH-Login'],
 		androidView : container
 	});
-
+	self.addEventListener('click',function(){
+		
+	});
 	self.show();
 };

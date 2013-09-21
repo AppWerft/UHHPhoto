@@ -1,8 +1,19 @@
+var UHHId = function() {
+	var keychain = require('com.obscure.keychain');
+	var keyitem = keychain.createKeychainItem('uhhident', 'hoffentlichnichtauffindbar');
+	this.uhhid = keyitem.valueData;
+	return this;
+};
+
+UHHId.prototype.isAuth = function() {
+	return (this.uhhid) ? true:false;
+};
+
+
 exports.tryall = function(_user, _callback) {
 	this.stinekennung(_user, _callback);
 	this.fkennung(_user, _callback);
 };
-
 
 exports.stinekennung = function(_user, _callback) {
 	var doResponse = function() {
@@ -21,7 +32,7 @@ exports.stinekennung = function(_user, _callback) {
 					title : name + '@STiNE',
 					name : name
 				});
-			} 
+			}
 		}
 	};
 	var postvalues = {
@@ -67,3 +78,4 @@ exports.fkennung = function(_user, _callback) {
 	xhr.send(null);
 };
 
+module.exports = UHHId; 
