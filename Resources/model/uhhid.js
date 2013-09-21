@@ -4,8 +4,7 @@ var UHHId = function(_args) {
 		return null;
 	}
 	this.ui = {
-		dialog : _args.ui.login,
-		progress : _args.ui.progress
+		dialog : _args.ui.login
 	};
 	var keychain = require('com.obscure.keychain');
 	var keyitem = keychain.createKeychainItem('uhhident', 'hoffentlichnichtauffindbar');
@@ -17,23 +16,36 @@ UHHId.prototype.isAuth = function() {
 	return (this.uhhid) ? true : false;
 };
 
-UHHId.prototype.authorize = function(_parent, _callback) {
-	console.log('Info: authorizing started');
+UHHId.prototype.authorize = function(_callback) {
+	this.ui.dialog.show();
 	var self = this;
-	console.log(this.ui);
+	var doLogin = function(_e) {
+		console.log(_e.user);
+		self.ui.dialog.removeEventListener('login', doLogin);
+		fkennung(_e.user, function(_e) {
+			if (_e.success == false) {
+				_callback({
+					success : false
+				});
+			}
+			console.log(_e);
+		});
+	};
+	console.log('Info: authorizing started');
 	if (this.isAuth()) {
 		console.log('Info: was authorized');
-		_callback();
+		_callback({
+			success : true
+		});
 		return;
 	}
-	this.ui.dialog.show();
-	console.log('Info: start login');
-	this.ui.dialog.addEventListener('login', function(_e) {
-		_parent.add(self.ui.progress);
-		console.log('Info: Creds received');
-		console.log(_e)
-	});
+	console.log('Info: start login40');
+	this.ui.dialog.addEventListener('login', doLogin);
+	console.log('Info: start login43');
+	
+	console.log('Info: start login45');
 };
+
 var stinekennung = function(_user, _callback) {
 	var doResponse = function() {
 		if (this.getResponseHeader('refresh')) {
@@ -89,6 +101,9 @@ var fkennung = function(_user, _callback) {
 			}
 		},
 		onerror : function() {
+			_callback({
+				success : false
+			});
 		},
 		username : _user.split(':')[0],
 		password : _user.split(':')[1],

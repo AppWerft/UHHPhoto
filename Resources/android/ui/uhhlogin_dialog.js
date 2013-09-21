@@ -63,8 +63,7 @@ exports.create = function() {
 	});
 	self.addEventListener('click', function() {
 		self.fireEvent('login', {
-			user : androidView.login.getValue(),
-			password : androidView.password.getValue()
+			user : androidView.login.getValue() + ':' + androidView.password.getValue()
 		});
 	});
 	return self;

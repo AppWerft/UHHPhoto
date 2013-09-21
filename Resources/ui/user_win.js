@@ -9,7 +9,10 @@ exports.create = function() {
 	self.add(loginbutton);
 	loginbutton.addEventListener('click', function() {
 		loginbutton.hide();
-		Ti.App.UHHId.authorize(self, function(e) {
+		Ti.App.UHHId.authorize(function(_e) {
+			if (_e.success == false) {
+				loginbutton.show();
+			}
 		});
 	});
 	return self;
