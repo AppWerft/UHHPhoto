@@ -1,4 +1,12 @@
-var UHHId = function() {
+var UHHId = function(_args) {
+	if (!_args.ui || typeof _args.ui != 'object') {
+		console.log('Error: missing loginUI');
+		return null;
+	}
+	this.ui = {
+		dialog : _args.ui.login,
+		progress : _args.ui.progress
+	};
 	var keychain = require('com.obscure.keychain');
 	var keyitem = keychain.createKeychainItem('uhhident', 'hoffentlichnichtauffindbar');
 	this.uhhid = keyitem.valueData;
@@ -6,16 +14,24 @@ var UHHId = function() {
 };
 
 UHHId.prototype.isAuth = function() {
-	return (this.uhhid) ? true:false;
+	return (this.uhhid) ? true : false;
 };
 
-
-exports.tryall = function(_user, _callback) {
-	this.stinekennung(_user, _callback);
-	this.fkennung(_user, _callback);
+UHHId.prototype.authorize = function(_parent, _callback) {
+	this.ui.parent = _parent;
+	this.ui.parent.add(this.ui.progress);
+	this.ui.progress.show();
+	var self = this;
+	if (this.isAuth()) {
+		_callback();
+	} else {
+		this.ui.dialog.create(function(_user) {
+			stinekennung(_user, _callback);
+			fkennung(_user, _callback);
+		});
+	}
 };
-
-exports.stinekennung = function(_user, _callback) {
+var stinekennung = function(_user, _callback) {
 	var doResponse = function() {
 		if (this.getResponseHeader('refresh')) {
 			var xhr = Ti.Network.createHTTPClient();
@@ -57,7 +73,7 @@ exports.stinekennung = function(_user, _callback) {
 	xhr_getcookie.send();
 };
 
-exports.fkennung = function(_user, _callback) {
+var fkennung = function(_user, _callback) {
 	var xhr = Ti.Network.createHTTPClient({
 		onload : function() {
 			if (this.status === 200) {
@@ -77,5 +93,4 @@ exports.fkennung = function(_user, _callback) {
 	xhr.open("GET", 'https://uhhdisk.nds.uni-hamburg.de/oneNet/NetStorage');
 	xhr.send(null);
 };
-
-module.exports = UHHId; 
+module.exports = UHHId;

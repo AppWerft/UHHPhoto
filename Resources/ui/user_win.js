@@ -3,7 +3,8 @@ exports.create = function() {
 		backgroundImage : '/assets/bg.jpg'
 	});
 	self.addEventListener('focus', function() {
-		require('ui/uhhlogin').create();
+		Ti.App.UHHId.authorize(self, function(e) {
+		});
 	});
 	return self;
 };

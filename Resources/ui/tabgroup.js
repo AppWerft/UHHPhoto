@@ -24,4 +24,4 @@ exports.create = function() {
 	tabGroup.addTab(tab3);
 	tabGroup.open();
 };
-require('ui/uhhlogin').create();
+//require('ui/uhhlogin').create();
