@@ -1,5 +1,9 @@
 build
 build.log
 tmp
+modules
+tiapp.xml
+.gitignore
+.settings
 ._*
 .DS_Store
