@@ -1,5 +1,7 @@
 exports.create = function() {
 	var self = Ti.UI.createWindow();
+	
+
 	const START = 0.1;
 	var region = {
 		latitude : 53.5627630,

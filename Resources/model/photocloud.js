@@ -1,69 +1,90 @@
-const USER = 'uhh_userid', PW = 'qwertz';
+const CLOUDUSERID = 'uhh_userid', PW = 'qwertz', ACLID = 'aclid';
 const TABLE = 'uhhphoto';
 
 var PhotoCloud = function() {
 	this.Cloud = require('ti.cloud');
-	this.uhh_userid;
-	this.uhh_aclid;
+	this.uhh_user = undefined;
+	this.cloud_userid = Ti.App.Properties.getString(CLOUDUSERID);
+	this.cloud_aclid = undefined;
 	return this;
 };
 
 PhotoCloud.prototype.createUser = function(_user, _callback) {
 	var self = this;
-	function createACL(_args, _callback) {
-		if (!Ti.App.Properties.hasProperty('acl_id')) {
-			this.Cloud.ACLs.create({
-				name : 'acl_' + user_name,
+	function createACL(_user, _callback) {
+		if (!Ti.App.Properties.hasProperty(ACLID)) {
+			var options = {
+				name : 'acl_' + _user,
 				public_read : true
-			}, function(e) {
-				if (!e.error)
-					Ti.App.Properties.setString('acl_id', e.acls[0].id);
+			};
+			console.log('Info: creating ACLid: ' + JSON.stringify(options));
+			self.Cloud.ACLs.create(options, function(_e) {
+				if (!_e.error) {
+					Ti.App.Properties.setString(ACLID, _e.acls[0].id);
+					console.log('Info: ACLid created: ' + _e.acls[0].id);
+				} else {
+					console.log(_e);
+				}
 			});
 		}
+		console.log('Info: we have always an ACLid ' + Ti.App.Properties.getString(ACLID));
 	};
-	function loginUser(_userid, _callback) {
-		if (!self.Cloud.sessionId) {
-			self.Cloud.Users.login({
-				login : self.user_name,
+	function loginUser(_user, _callback) {
+		if (!self.Cloud.sessionId) {// Variable in Cloud
+			var options = {
+				login : Ti.Utils.md5HexDigest(_user),
 				password : PW
-			}, function(e) {
-				if (e.success) {
-					console.log('Login with ' + user_name + ' successful ;-))');
-					createACL();
+			};
+			console.log('Info: sessionId missing ==> login as ' + JSON.stringify(options));
+			self.Cloud.Users.login(options, function(_e) {
+				if (_e.success) {
+					console.log('Login with ' + JSON.stringify(options) + ' successful ;-))');
+					createACL(_user);
 				} else
-					console.log('ERROR: Login with ' + user_name + ' unsuccessful');
+					console.log('ERROR: Login with ' + JSON.stringify(options) + ' unsuccessful');
 			});
 		} else {
-			console.log('SessionId exists');
-			createACL();
+			console.log('Info: sessionId already exists');
+			createACL(_user);
 		}
 	};
-	if (!Ti.App.Properties.hasProperty(USER)) {
-		this.Cloud.Users.create({
-			"username" : _user,
+	// creating of Cloud user:
+	if (!Ti.App.Properties.hasProperty(CLOUDUSERID)) {
+		console.log('Info: no CLOUDUSERID => creating one');
+		var options = {
+			"username" : Ti.Utils.md5HexDigest(_user),
 			"password" : PW,
 			"password_confirmation" : PW,
 			"first_name" : "",
 			"last_name" : ""
-		}, function(e) {
-			if (e.success) {
-				self.uhh_userid = e.users[0].id;
-				Ti.App.Properties.setString(USER, self.uhh_userid);
-				loginUser(self.uhh_userid);
+		};
+		console.log('Info: no CLOUDUSERID => creating one width ' + JSON.stringify(options));
+		this.Cloud.Users.create(options, function(_e) {
+			console.log(_e);
+			if (_e.success) {
+				self.cloud_userid = _e.users[0].id;
+				Ti.App.Properties.setString(CLOUDUSERID, self.cloud_userid);
+				console.log('Info: got new userid from cloud: ' + _e.users[0].id);
+				loginUser(_user, function() {
+				});
 			} else {
-				if (e.error && e.message) {
-					console.log('Error :' + e.message);
-				}
+				if (_e.error && _e.message) {
+					console.log('Error :' + _e.message);
+				}_
 			}
 		});
+		console.log('Info: creating of ' + JSON.stringify(options));
 	} else {
-		uhh_userid = Ti.App.Properties.getString(USER);
-		loginUser(uhh_userid);
+		this.cloud_userid = Ti.App.Properties.getString(CLOUDUSERID);
+		console.log('Info: user (' + this.cloud_userid + ') always exists, only login into cloud.');
+		loginUser(_user, function() {
+		});
 	}
 };
 
-
 //// End of Cloud initialisation
+
+
 
 function getPhoto(_item, _callback) {
 	if (!_item.photo || !_item.photo.id)
@@ -137,7 +158,9 @@ exports.getVoting = function(_dish, _callback) {
 };
 
 /* POSTING OF COMMENT AND PHOTO */
-exports.postComment = function(_args) {
+///////////////////////////////////////////////////////////////////////////////////////////////
+PhotoCloud.prototype.postItem = function(_args) {
+	var self = this;
 	function postPhoto(_args) {
 		if (!_args.post.photo && _args.onsuccess && typeof (_args.onsuccess) == 'function') {
 			_args.onsuccess(null);
@@ -147,7 +170,7 @@ exports.postComment = function(_args) {
 		console.log( typeof _args.post.photo);
 		Cloud.Photos.create({
 			photo : _args.post.photo,
-			acl_id : mensa_aclid
+			acl_id : self.cloud_aclid
 		}, function(e) {
 			Cloud.onsendstream = Cloud.ondatastream = null;
 			console.log('===create Photo======');
@@ -173,14 +196,15 @@ exports.postComment = function(_args) {
 			console.log(_photo);
 			if (_photo != null)
 				post.photo = _photo;
-			post.user_id = mensa_userid;
+			post.user_id = self.cloud_userid;
 
 			if (id == null) {
-				Cloud.Objects.create({
-					acl_id : mensa_aclid,
+				var options = {
+					acl_id : self.cloud_aclid,
 					classname : TABLE,
 					fields : post
-				}, function(e) {
+				};
+				Cloud.Objects.create(options, function(e) {
 					if (e.success) {
 						if (_args.onsuccess && typeof (_args.onsuccess) == 'function')
 							_args.onsuccess();

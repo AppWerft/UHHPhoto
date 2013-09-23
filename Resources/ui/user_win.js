@@ -31,7 +31,9 @@ exports.create = function() {
 		data : [self.camerarow],
 		backgroundColor : 'white'
 	});
-	if (Ti.App.UHHId.isAuth()) {
+	var uhh_user = Ti.App.UHHId.isAuth();
+	if (uhh_user != null) {
+		Ti.App.PhotoCloud.createUser(uhh_user);
 		self.add(self.tv);
 	} else {
 		self.add(self.loginbutton);
@@ -42,16 +44,20 @@ exports.create = function() {
 	self.tv.addEventListener('click', function(_e) {
 		if (_e.rowData.ndx == 0) {
 			Ti.Media.showCamera({
-				allowEditing : true,
+				allowEditing : false,
 				autohide : true,
 				mediaTypes : Ti.Media.MEDIA_TYPE_PHOTO,
 				showControls : true,
-				success : function() {
-					
+				success : function(_e) {
+					if (_e.success) {
+						console.log(_e.media);
+						Ti.App.PhotoCloud.postItem({
+							post :  _e.media
+						});
+					}
 				}
 			});
 		}
-
 	});
 	self.loginbutton.addEventListener('click', function() {
 		self.loginbutton.hide();
@@ -60,6 +66,8 @@ exports.create = function() {
 				self.loginbutton.show();
 			} else {
 				self.add(self.tv);
+				console.log('Info: list of own photos added');
+
 			}
 		});
 	});

@@ -20,8 +20,12 @@ exports.create = function() {
 		window : require('ui/user_win').create()
 	});
 	tabGroup.addTab(tab1);
-	tabGroup.addTab(tab2);
+	
 	tabGroup.addTab(tab3);
+	var rc = Ti.App.GMap.isGooglePlayServicesAvailable();
+	if (rc == Ti.App.GMap.SUCCESS) 
+		
+	tabGroup.addTab(tab2);
 	tabGroup.open();
 };
 //require('ui/uhhlogin').create();

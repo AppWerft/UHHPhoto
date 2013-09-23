@@ -11,12 +11,19 @@ var UHHId = function(_args) {
 };
 
 UHHId.prototype.isAuth = function() {
-	return (this.keyitem.account) ? true : false;
+	if (this.keyitem.account) {
+		//Ti.App.PhotoCloud.createUser(this.keyitem.account, function(_e) {
+		//});
+		return (this.keyitem.account);
+	} {
+		return null;
+	}
 };
 
-UHHId.prototype.setAuth = function(_userid) {
-	Ti.App.PhotoCloud.loginUser(_userid);
-	this.keyitem.account = _userid;
+UHHId.prototype.setAuth = function(_uhh_user) {
+	console.log('Info: persisting of uhh_user');
+	this.keyitem.account = _uhh_user;
+	console.log(this.keyitem);
 };
 
 /** will triggered by user_window **/
@@ -48,21 +55,20 @@ UHHId.prototype.authorize = function(_callback) {
 		}
 		tryFKennung(_e.user, progressIndicator || null, function(_e) {
 			Ti.Android && progressIndicator.hide();
-			if (_e.success == false) {
+			if (_e.success == true) {
+				console.log('Info: login FK successful');
+				self.setAuth(_e.user);
+				_callback && _callback({
+					success : true,
+					user : _e.user
+				});
+			} else {
 				console.log('Warning: login unsuccessful');
 				_callback({
 					success : false
 				});
 			}
-			if (_e.success == true) {
-				console.log('Info: login successful');
-				self.setAuth(_e.user);
-				_callback({
-					success : true,
-					user : _e.user
 
-				});
-			}
 		});
 	};
 	console.log('Info: authorizing started');
@@ -75,7 +81,7 @@ UHHId.prototype.authorize = function(_callback) {
 	 }*/
 	loginDialog.show();
 	loginDialog.addEventListener('login', doLogin);
-	console.log('Info: start login45');
+	console.log('Info: start login');
 };
 
 var trySTiNEkennung = function(_user, _callback) {
