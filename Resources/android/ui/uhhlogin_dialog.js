@@ -1,4 +1,4 @@
-exports.create = function() {
+var Dialog = function() {
 	var androidView = Ti.UI.createView({
 		layout : 'vertical',
 		height : Ti.UI.SIZE,
@@ -27,6 +27,7 @@ exports.create = function() {
 		top : '15dp',
 		left : '20dp',
 		right : '20dp',
+		value: 'f6sv005',
 		height : '50dp',
 		hintText : 'STiNE- oder F-Kennung'
 	});
@@ -37,6 +38,7 @@ exports.create = function() {
 		right : '20dp',
 		height : '50dp',
 		bottom : '15dp',
+		value : '*MHpsNH',
 		hintText : 'Passwort dazu',
 		passwordMask : true
 	});
@@ -68,3 +70,4 @@ exports.create = function() {
 	});
 	return self;
 };
+module.exports = Dialog;
