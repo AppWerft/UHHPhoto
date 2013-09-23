@@ -84,8 +84,6 @@ PhotoCloud.prototype.createUser = function(_user, _callback) {
 
 //// End of Cloud initialisation
 
-
-
 function getPhoto(_item, _callback) {
 	if (!_item.photo || !_item.photo.id)
 		return;
@@ -168,11 +166,11 @@ PhotoCloud.prototype.postItem = function(_args) {
 		}
 		console.log(_args.post.photo);
 		console.log( typeof _args.post.photo);
-		Cloud.Photos.create({
+		self.Cloud.Photos.create({
 			photo : _args.post.photo,
 			acl_id : self.cloud_aclid
 		}, function(e) {
-			Cloud.onsendstream = Cloud.ondatastream = null;
+			self.Cloud.onsendstream = self.Cloud.ondatastream = null;
 			console.log('===create Photo======');
 			console.log(e);
 			if (e.success) {
@@ -189,47 +187,32 @@ PhotoCloud.prototype.postItem = function(_args) {
 	var post = _args.post, id = _args.id;
 	postPhoto({
 		post : post,
-		onerror : function() {
+		onerror : function(_e) {
+			console.log(_e);
 		},
 		onsuccess : function(_photo) {
-			console.log('onsuccess in postPhoto');
-			console.log(_photo);
-			if (_photo != null)
+			console.log('Info: onsuccess in postPhoto');
+			console.log('Info: callback from posting: ' + JSON.stringify(_photo));
+			if (_photo != null) {
 				post.photo = _photo;
-			post.user_id = self.cloud_userid;
-
-			if (id == null) {
-				var options = {
-					acl_id : self.cloud_aclid,
-					classname : TABLE,
-					fields : post
-				};
-				Cloud.Objects.create(options, function(e) {
-					if (e.success) {
-						if (_args.onsuccess && typeof (_args.onsuccess) == 'function')
-							_args.onsuccess();
-					} else {
-						if (_args.onerror && typeof (_args.onerror) == 'function')
-							_args.onerror();
-						else
-							console.log('no callback');
-					}
-				});
-			} else {
-				Cloud.Objects.update({
-					classname : TABLE,
-					id : id,
-					fields : post
-				}, function(_e) {
-					if (_e.success) {
-						if (_args.onsuccess && typeof (_args.onsuccess) == 'function')
-							_args.onsuccess();
-					} else {
-						if (_args.onerror && typeof (_args.onerror) == 'function')
-							_args.onerror();
-					}
-				});
 			}
+			post.user_id = self.cloud_userid;
+			var options = {
+				acl_id : self.cloud_aclid,
+				classname : TABLE,
+				fields : post
+			};
+			self.Cloud.Objects.create(options, function(e) {
+				if (e.success) {
+					if (_args.onsuccess && typeof (_args.onsuccess) == 'function')
+						_args.onsuccess();
+				} else {
+					if (_args.onerror && typeof (_args.onerror) == 'function')
+						_args.onerror();
+					else
+						console.log('no callback');
+				}
+			});
 		}
 	});
 };
