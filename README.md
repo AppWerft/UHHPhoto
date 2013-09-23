@@ -2,4 +2,4 @@ PhotoSummit UHH
 ===============
 
 
-![x](https://github.com/AppWerft/UHHPhoto/screenshots/loginscreen.png)
+![x](https://raw.github.com/AppWerft/UHHPhoto/master/screenshots/loginscreen.png)
