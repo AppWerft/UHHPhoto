@@ -160,19 +160,18 @@ exports.getVoting = function(_dish, _callback) {
 PhotoCloud.prototype.postItem = function(_args) {
 	var self = this;
 	function postPhoto(_args) {
-		if (!_args.post.photo && _args.onsuccess && typeof (_args.onsuccess) == 'function') {
-			_args.onsuccess(null);
-			return;
-		}
-		console.log(_args.post.photo);
-		console.log( typeof _args.post.photo);
-		self.Cloud.Photos.create({
+		/*if (!_args.post.photo && _args.onsuccess && typeof (_args.onsuccess) == 'function') {
+		 _args.onsuccess(null);
+		 return;
+		 }*/
+		var options = {
 			photo : _args.post.photo,
 			acl_id : self.cloud_aclid
-		}, function(e) {
+		};
+		self.Cloud.Photos.create(options, function(_e) {
 			self.Cloud.onsendstream = self.Cloud.ondatastream = null;
-			console.log('===create Photo======');
-			console.log(e);
+			console.log(JSON.stringify(options));
+			console.log(_e);
 			if (e.success) {
 				if (_args.onsuccess && typeof (_args.onsuccess) == 'function')
 					_args.onsuccess(e.photos[0]);
@@ -184,7 +183,7 @@ PhotoCloud.prototype.postItem = function(_args) {
 	};
 	// Code start:
 	console.log('POSTING start');
-	var post = _args.post, id = _args.id;
+	var post = _args.post;
 	postPhoto({
 		post : post,
 		onerror : function(_e) {
