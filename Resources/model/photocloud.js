@@ -69,24 +69,24 @@ function getPhoto(_item, _callback) {
 	if (!_item.photo || !_item.photo.id)
 		return;
 	if (_item.photo_url)
-		_callback(_item)
+		_callback(_item);
 	else {// proccessed ?
 		Cloud.Photos.show({
 			photo_id : _item.photo.id
 		}, function(_e) {
 			if (_e.success && _e.photos) {
 				_item.photo_url = _e.photos[0].urls;
-				_callback(_item)
+				_callback(_item);
 			} else {
 				console.log('ERROR: ');
 			}
 		});
 	}
-}
+};
 
 /////////////////////////////////////////////////////////////////////////////////////////
 /// Functional modules
-exports.getDataByUserAndDish = function(_dish, _callback) {
+PhotoCloud.prototype.getDataByUserAndDish = function(_dish, _callback) {
 	Cloud.Objects.query({
 		classname : TABLE,
 		where : {
@@ -98,7 +98,7 @@ exports.getDataByUserAndDish = function(_dish, _callback) {
 			console.log('===getDataByUserAndDish======');
 			var item = e.mensa[0];
 			if (!item.photo) {// without photo
-				_callback(item)
+				_callback(item);
 			} else {
 				getPhoto(item, _callback);
 			};

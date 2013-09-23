@@ -47,7 +47,7 @@ UHHId.prototype.authorize = function(_callback) {
 			progressIndicator.show();
 		}
 		tryFKennung(_e.user, progressIndicator || null, function(_e) {
-			Ti.Android && progressIndicator.hide()
+			Ti.Android && progressIndicator.hide();
 			if (_e.success == false) {
 				console.log('Warning: login unsuccessful');
 				_callback({
