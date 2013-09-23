@@ -15,6 +15,25 @@ exports.create = function() {
 		backgroundImage : '/assets/camera.png',
 		backgroundSelectedImage : '/assets/camera_.png',
 	});
+	self.progress = Ti.UI.createProgressBar({
+		bottom : '10px',
+		width : Ti.UI.FILL,
+		height : '50dp',
+		left : '10dp',
+		min : 0,
+		value : 0,
+		max : 1,
+		visible : false,
+		right : '100dp'
+
+	});
+	self.preview = Ti.UI.createImageView({
+		width : '60%',
+		borderRadius : 10,
+		height : 'auto',
+		opacity : 0,
+		zIndex : 9999
+	});
 	self.camerabutton.add(Ti.UI.createImageView({
 		image : '/assets/camera.png',
 		width : 90,
@@ -31,6 +50,7 @@ exports.create = function() {
 		Ti.App.PhotoCloud.createUser(uhh_user);
 		self.add(self.tv);
 		self.add(self.camerabutton);
+		self.add(self.progress);
 	} else {
 		self.add(self.loginbutton);
 	}
@@ -47,6 +67,7 @@ exports.create = function() {
 				success : function(_e) {
 					if (_e.success) {
 						console.log(_e.media);
+						self.preview.image = _e.media.image;
 						Ti.App.PhotoCloud.postItem({
 							post : _e.media
 						});
@@ -63,8 +84,10 @@ exports.create = function() {
 			showControls : true,
 			success : function(_e) {
 				if (_e.success) {
-					console.log(_e.media);
-					Ti.App.PhotoCloud.postItem({
+					self.preview.image = _e.media.nativePath;
+					Ti.App.PhotoCloud.postPhoto({
+						progress : self.progress,
+						preview : self.preview,
 						post : {
 							photo : _e.media,
 							title : 'no title',
@@ -91,6 +114,7 @@ exports.create = function() {
 			}
 		});
 	});
+	self.add(self.preview);
 	return self;
 };
 

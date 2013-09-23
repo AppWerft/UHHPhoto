@@ -1,7 +1,23 @@
 exports.get = function(_callback) {
 	Ti.Geolocation.purpose = 'Get Current Location';
+	if (Ti.Platform.osname == 'android') {
+		var gpsProvider = Ti.Geolocation.Android.createLocationProvider({
+			name : Ti.Geolocation.PROVIDER_GPS,
+			minUpdateTime : 600,
+			minUpdateDistance : 100
+		});
+		var gpsRule = Ti.Geolocation.Android.createLocationRule({
+			provider : Ti.Geolocation.PROVIDER_GPS,
+			accuracy : 10,
+			maxAge : 300,
+			minAge : 10
+		});
+		Ti.Geolocation.Android.addLocationRule(gpsRule);
+		Ti.Geolocation.Android.addLocationProvider(gpsProvider);
+	}
 	Ti.Geolocation.getCurrentPosition(function(_e) {
 		var latlng = _e.latitude + ',' + _e.longitude;
+		console.log(latlng);
 		var url = 'http://maps.googleapis.com/maps/api/geocode/json?latlng=' + latlng + '&sensor=false';
 		var self = Ti.Network.createHTTPClient({
 			onload : function() {
