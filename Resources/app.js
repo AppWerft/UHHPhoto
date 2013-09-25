@@ -1,5 +1,8 @@
 (function() {
-	console.log('Info: App started =======================');
+	console.log('Info: ======================= App started =======================');
+//	require('model/geolocation').get(function(_e) {
+//		console.log(_e);
+//	});
 	Ti.App.GMap = Ti.Android ? require('ti.map') : Ti.Map;
 
 	var PhotoCloud = require('model/photocloud');
@@ -12,7 +15,5 @@
 		}
 	});
 	require('ui/tabgroup').create();
-	require('model/geolocation').get(function(_e) {
-		console.log(_e);
-	});
+	
 })();

@@ -45,37 +45,17 @@ exports.create = function() {
 		backgroundColor : 'white'
 	});
 
-	var uhh_user = Ti.App.UHHId.isAuth();
-	if (uhh_user != null) {
-		Ti.App.PhotoCloud.createUser(uhh_user);
-		self.add(self.tv);
-		self.add(self.camerabutton);
-		self.add(self.progress);
-	} else {
-		self.add(self.loginbutton);
-	}
-
-	/* Events */
-
-	self.tv.addEventListener('click', function(_e) {
-		if (_e.rowData.ndx == 0) {
-			Ti.Media.showCamera({
-				allowEditing : false,
-				autohide : true,
-				mediaTypes : Ti.Media.MEDIA_TYPE_PHOTO,
-				showControls : true,
-				success : function(_e) {
-					if (_e.success) {
-						console.log(_e.media);
-						self.preview.image = _e.media.image;
-						Ti.App.PhotoCloud.postItem({
-							post : _e.media
-						});
-					}
-				}
-			});
+	Ti.App.UHHId.isAuth(function(_success) {
+		if (_success == true) {
+			self.add(self.tv);
+			self.add(self.camerabutton);
+			self.add(self.progress);
+		} else {
+			self.add(self.loginbutton);
 		}
 	});
+	/* Events */
+
 	self.camerabutton.addEventListener('click', function(_e) {
 		Ti.Media.showCamera({
 			allowEditing : false,
@@ -85,16 +65,20 @@ exports.create = function() {
 			success : function(_e) {
 				if (_e.success) {
 					self.preview.image = _e.media.nativePath;
+					console.log('-------');
+					console.log(_e.width);
+					console.log(_e.height);
+					console.log('-------');
 					Ti.App.PhotoCloud.postPhoto({
 						progress : self.progress,
 						preview : self.preview,
 						post : {
 							photo : _e.media,
 							title : 'no title',
-							geoposition : {
-								latitude : 53.35,
-								longitude : 10
-							}
+							coordinates : [10,53.55],
+							width : _e.width,
+							height : _e.height
+
 						}
 					});
 				}
@@ -104,11 +88,12 @@ exports.create = function() {
 	});
 	self.loginbutton.addEventListener('click', function() {
 		self.loginbutton.hide();
-		Ti.App.UHHId.authorize(function(_e) {
-			if (_e.success == false) {
+		Ti.App.UHHId.authorize(function(_success) {
+			if (_success == false) {
 				self.loginbutton.show();
 			} else {
 				self.add(self.tv);
+				self.add(self.camerabutton);
 				console.log('Info: list of own photos added');
 
 			}

@@ -2,7 +2,7 @@
 exports.create = function() {
 	Ti.UI.backgroundColor = 'white';
 	var tabGroup = Titanium.UI.createTabGroup({
-		backgroundColor : 'white'
+		backgroundColor : 'white',exitOnClose :true
 	});
 	var tab1 = Titanium.UI.createTab({
 		icon : '/icons/list.png',
